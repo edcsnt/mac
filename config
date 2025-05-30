@@ -1,0 +1,52 @@
+# Copyright (C) 2025 Eduardo Santos <eduardo.experimental@gmail.com>
+#
+# This file is part of edcsnt/macos.
+#
+# edcsnt/macos is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, either version 3 of the License, or (at your option) any later
+# version.
+#
+# edcsnt/macos is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# edcsnt/macos. If not, see <https://www.gnu.org/licenses/>.
+#
+
+# options
+THEME=WhiteSur
+VARIANTS='-Dark -Light'        # either '-Dark', '-Light', or '-Dark -Light'
+FFPF=4d69ooeh.default-release  # your Firefox profile
+
+# versions
+GTKVER=2025-04-03
+ICOVER=v2025-02-10
+CURVER=v2.0.1
+GRUBVER=2025-03-03
+D2DVER=100
+
+# sources
+GTKREL=https://github.com/vinceliuice/WhiteSur-gtk-theme/archive/refs/tags/$GTKVER.tar.gz
+ICOREL=https://github.com/vinceliuice/WhiteSur-icon-theme/archive/refs/tags/$ICOVER.tar.gz
+CURREL=https://github.com/ful1e5/apple_cursor/releases/download/$CURVER/macOS.tar.xz
+GRUBREL=https://github.com/vinceliuice/grub2-themes/archive/refs/tags/$GRUBVER.tar.gz
+D2DREL=https://raw.githubusercontent.com/micheleg/dash-to-dock/refs/tags/extensions.gnome.org-v$D2DVER/_stylesheet.scss
+BGD=https://512pixels.net/downloads/macos-wallpapers/11-0-Big-Sur-Color-Night.jpg
+BGL=https://512pixels.net/downloads/macos-wallpapers/11-0-Color-Day.jpg
+
+# static dirs
+ADW=$HOME/.config/gtk-4.0
+GS=/usr/share/gnome-shell/gnome-shell-theme.gresource
+D2D=$HOME/.local/share/gnome-shell/extensions/dash-to-dock@micxgx.gmail.com/stylesheet.css
+FF=$HOME/.mozilla/firefox/firefox-themes
+
+# misc
+CURLRC='-q --compressed --curves X25519 --doh-cert-status --fail-early \
+--fail-with-body -g --hsts "" --http2 -L --no-clobber -Z --proto =https \
+--remove-on-error -s --tls13-ciphers TLS_AES_256_GCM_SHA384 --tlsv1.3 \
+-A "Mozilla/5.0 (X11; Linux x86_64; rv:138.0) Gecko/20100101 Firefox/138.0"'
+# https://github.com/vinceliuice/WhiteSur-gtk-theme/blob/9f9646c02a19335eb2d48d6b9a19136d9ec8fbf7/libs/lib-install.sh#L412
+THEMECMT='A MacOS BigSur like Gtk+ theme based on Elegant Design'

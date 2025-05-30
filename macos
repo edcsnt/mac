@@ -1,0 +1,563 @@
+#!/bin/sh
+#
+# Copyright (C) 2025 Eduardo Santos <eduardo.experimental@gmail.com>
+#
+# This file is part of edcsnt/macos.
+#
+# edcsnt/macos is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, either version 3 of the License, or (at your option) any later
+# version.
+#
+# edcsnt/macos is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# edcsnt/macos. If not, see <https://www.gnu.org/licenses/>.
+#
+
+bakgs() {
+	# https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/e935a0ad7c256bf6929699512bd31d2c985640a7/data/theme/meson.build#L57
+	sassc -a $GSSRC/theme/gnome-shell-high-contrast.scss \
+		$GSSRC/theme/gnome-shell-high-contrast.css
+	sassc -a $GSSRC/theme/gnome-shell-dark.scss \
+		$GSSRC/theme/gnome-shell-dark.css
+	sassc -a $GSSRC/theme/gnome-shell-light.scss \
+		$GSSRC/theme/gnome-shell-light.css
+	# https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/e935a0ad7c256bf6929699512bd31d2c985640a7/data/meson.build#L67-86
+	glib-compile-resources $GSSRC/gnome-shell-theme.gresource.xml \
+		--sourcedir $GSSRC/theme \
+		--generate \
+		--target $GS.bak
+}
+
+equ() { case $1 in $2) return 0 ;; *) return 1; esac; }
+
+null() { case $1 in '') return 0 ;; *) return 1; esac; }
+
+ico() {
+	# can't loop outside because the first argument is a null string
+	for v in "$@"
+	do
+		dest=$HOME/.local/share/icons/$THEME$v
+		[ -d $dest ] && rm -fR $dest
+		mkdir -p $dest/apps \
+			$dest/categories \
+			$dest/emblems \
+			$dest/devices \
+			$dest/mimes \
+			$dest/places \
+			$dest/status
+		sed s/$THEME/$THEME$v/ $ICOSRC/src/index.theme
+			> $dest/index.theme
+		if null $v
+		then
+			cp -R $ICOSRC/src/actions \
+				$ICOSRC/src/animations \
+				$ICOSRC/src/apps \
+				$ICOSRC/src/categories \
+				$ICOSRC/src/devices \
+				$ICOSRC/src/emotes \
+				$ICOSRC/src/emblems \
+				$ICOSRC/src/mimes \
+				$ICOSRC/src/places \
+				$ICOSRC/src/preferences \
+				$ICOSRC/bold/* \
+				$ICOSRC/links/actions \
+				$ICOSRC/links/apps \
+				$ICOSRC/links/categories \
+				$ICOSRC/links/devices \
+				$ICOSRC/links/emotes \
+				$ICOSRC/links/emblems \
+				$ICOSRC/links/mimes \
+				$ICOSRC/links/places \
+				$ICOSRC/links/status \
+				$ICOSRC/links/preferences \
+				$dest
+			cp -R $ICOSRC/src/status/16 \
+				$ICOSRC/src/status/22 \
+				$ICOSRC/src/status/24 \
+				$ICOSRC/src/status/32 \
+				$ICOSRC/src/status/symbolic \
+				$dest/status
+			rm $dest/places/scalable/user-trash-dark.svg
+				$dest/places/scalable/user-trash-full-dark.svg
+			ln -s 32 $dest/preferences/22
+		elif equ $v -light
+		then
+			cp -R $ICOSRC/src/status/16 \
+				$ICOSRC/src/status/22 \
+				$ICOSRC/src/status/24 \
+				$ICOSRC/src/status/32 \
+				$ICOSRC/bold/status/16 \
+				$ICOSRC/bold/status/22 \
+				$ICOSRC/bold/status/24 \
+				$dest/status
+			find $dest/status/16 \
+				$dest/status/22 \
+				$dest/status/24 \
+				$dest/status/32 \
+				-type f \
+				-size +0c \
+				-exec sh -c 'ed -s $1 > /dev/null <<- EOF
+					g/#f2f2f2/s//#363636/g
+					w
+					q
+				EOF' sh {} \;
+			# I don't know if Vince copied $ICOSRC/links/status/*
+			# after sed intentionally, so even though we could
+			# avoid a fork(2) by moving this up, let's be safe
+			# instead.
+			cp -R $ICOSRC/links/status/16 \
+				$ICOSRC/links/status/22 \
+				$ICOSRC/links/status/24 \
+				$ICOSRC/links/status/32 \
+				$dest/status
+			ln -s ../$THEME/actions $dest/actions
+			ln -s ../$THEME/animations $dest/animations
+			ln -s ../$THEME/apps $dest/apps
+			ln -s ../$THEME/categories $dest/categories
+			ln -s ../$THEME/devices $dest/devices
+			ln -s ../$THEME/emotes $dest/emotes
+			ln -s ../$THEME/emblems $dest/emblems
+			ln -s ../$THEME/mimes $dest/mimes
+			ln -s ../$THEME/places $dest/places
+			ln -s ../$THEME/preferences $dest/preferences
+			ln -s ../../$THEME/status/symbolic \
+				$dest/status/symbolic
+		elif [ "${v}" = '-dark' ]
+		then
+			cp -RLfp -- "${ICOSRC}/src/actions" "${dest}"
+			cp -RLfp -- "${ICOSRC}/src/apps/22" \
+				"${ICOSRC}/src/apps/32" \
+				"${ICOSRC}/src/apps/symbolic" \
+				"${dest}/apps"
+			cp -RLfp -- "${ICOSRC}/src/categories/22" \
+				"${ICOSRC}/src/categories/symbolic" \
+				"${dest}/categories"
+			cp -RLfp -- "${ICOSRC}/src/emblems/symbolic" \
+				"${dest}/emblems"
+			cp -RLfp -- "${ICOSRC}/src/mimes/symbolic" \
+				"${dest}/mimes"
+			cp -RLfp -- "${ICOSRC}/src/devices/16" \
+				"${ICOSRC}/src/devices/22" \
+				"${ICOSRC}/src/devices/24" \
+				"${ICOSRC}/src/devices/32" \
+				"${ICOSRC}/src/devices/symbolic" \
+				"${dest}/devices"
+			cp -RLfp -- "${ICOSRC}/src/places/16" \
+				"${ICOSRC}/src/places/22" \
+				"${ICOSRC}/src/places/24" \
+				"${ICOSRC}/src/places/scalable" \
+				"${ICOSRC}/src/places/symbolic" \
+				"${dest}/places"
+			cp -RLfp -- "${ICOSRC}/src/status/symbolic" \
+				"${dest}/status"
+			cp -Lfp -- "${ICOSRC}/bold/actions/symbolic/"*'.svg' \
+				"${dest}/actions/symbolic"
+			cp -Lfp -- "${ICOSRC}/bold/apps/symbolic/"*'.svg' \
+				"${dest}/apps/symbolic"
+			cp -Lfp -- "${ICOSRC}/bold/devices/symbolic/"*'.svg' \
+				"${dest}/devices/symbolic"
+			cp -Lfp -- "${ICOSRC}/bold/status/symbolic/"*'.svg' \
+				"${dest}/status/symbolic"
+			mv -f -- \
+				"${dest}/places/scalable/user-trash-dark.svg" \
+				"${dest}/places/scalable/user-trash.svg"
+			mv -f -- \
+				"${dest}/places/scalable/user-trash-full-dark.svg" \
+				"${dest}/places/scalable/user-trash-full.svg"
+			find -L -- "${dest}/actions/16" \
+				"${dest}/actions/22" \
+				"${dest}/actions/24" \
+				"${dest}/devices/16" \
+				"${dest}/devices/22" \
+				"${dest}/devices/24" \
+				"${dest}/places/16" \
+				"${dest}/places/22" \
+				"${dest}/places/24" \
+				"${dest}/apps/22" \
+				"${dest}/apps/32" \
+				"${dest}/categories/22" \
+				"${dest}/actions/32" \
+				"${dest}/devices/32" \
+				"${dest}/actions/symbolic" \
+				"${dest}/apps/symbolic" \
+				"${dest}/categories/symbolic" \
+				"${dest}/emblems/symbolic" \
+				"${dest}/devices/symbolic" \
+				"${dest}/mimes/symbolic" \
+				"${dest}/places/symbolic" \
+				"${dest}/status/symbolic" \
+				-name '*.svg' \
+				-type f \
+				-size +0c \
+				-exec sh -ceux 'ed -s "$1" > "/dev/null" <<- EOF
+					g/#363636/s//#dedede/g
+					w
+					q
+				EOF' sh {} \;
+			cp -RLfp -- "${ICOSRC}/links/actions/16" \
+				"${ICOSRC}/links/actions/22" \
+				"${ICOSRC}/links/actions/24" \
+				"${ICOSRC}/links/actions/32" \
+				"${ICOSRC}/links/actions/symbolic" \
+				"${dest}/actions"
+			cp -RLfp -- "${ICOSRC}/links/devices/16" \
+				"${ICOSRC}/links/devices/22" \
+				"${ICOSRC}/links/devices/24" \
+				"${ICOSRC}/links/devices/32" \
+				"${ICOSRC}/links/devices/symbolic" \
+				"${dest}/devices"
+			cp -RLfp -- "${ICOSRC}/links/places/16" \
+				"${ICOSRC}/links/places/22" \
+				"${ICOSRC}/links/places/24" \
+				"${ICOSRC}/links/places/scalable" \
+				"${ICOSRC}/links/places/symbolic" \
+				"${dest}/places"
+			cp -RLfp -- "${ICOSRC}/links/apps/symbolic" \
+				"${dest}/apps"
+			cp -RLfp -- "${ICOSRC}/links/categories/22" \
+				"${ICOSRC}/links/categories/symbolic" \
+				"${dest}/categories"
+			cp -RLfp -- "${ICOSRC}/links/mimes/symbolic" \
+				"${dest}/mimes"
+			cp -RLfp -- "${ICOSRC}/links/status/symbolic" \
+				"${dest}/status"
+			ln -fsL -- "../${THEME}/animations" \
+				"${dest}/animations"
+			ln -fsL -- "../${THEME}/emotes" "${dest}/emotes"
+			ln -fsL -- "../${THEME}/preferences" \
+				"${dest}/preferences"
+			ln -fsL -- "../../${THEME}/categories/32" \
+				"${dest}/categories/32"
+			ln -fsL -- "../../${THEME}/emblems/16" \
+				"${dest}/emblems/16"
+			ln -fsL -- "../../${THEME}/emblems/22" \
+				"${dest}/emblems/22"
+			ln -fsL -- "../../${THEME}/emblems/24" \
+				"${dest}/emblems/24"
+			ln -fsL -- "../../${THEME}/mimes/16" "${dest}/mimes/16"
+			ln -fsL -- "../../${THEME}/mimes/22" "${dest}/mimes/22"
+			ln -fsL -- "../../${THEME}/mimes/scalable" \
+				"${dest}/mimes/scalable"
+			ln -fsL -- "../../${THEME}/apps/scalable" \
+				"${dest}/apps/scalable"
+			ln -fsL -- "../../${THEME}/devices/scalable" \
+				"${dest}/devices/scalable"
+			ln -fsL -- "../../${THEME}/status/16" \
+				"${dest}/status/16"
+			ln -fsL -- "../../${THEME}/status/22" \
+				"${dest}/status/22"
+			ln -fsL -- "../../${THEME}/status/24" \
+				"${dest}/status/24"
+			ln -fsL -- "../../${THEME}/status/32" \
+				"${dest}/status/32"
+		fi
+		ln -fsL -- 'actions' "${dest}/actions@2x"
+		ln -fsL -- 'animations' "${dest}/animations@2x"
+		ln -fsL -- 'apps' "${dest}/apps@2x"
+		ln -fsL -- 'categories' "${dest}/categories@2x"
+		ln -fsL -- 'devices' "${dest}/devices@2x"
+		ln -fsL -- 'emotes' "${dest}/emotes@2x"
+		ln -fsL -- 'emblems' "${dest}/emblems@2x"
+		ln -fsL -- 'mimes' "${dest}/mimes@2x"
+		ln -fsL -- 'places' "${dest}/places@2x"
+		ln -fsL -- 'preferences' "${dest}/preferences@2x"
+		ln -fsL -- 'status' "${dest}/status@2x"
+		gtk-update-icon-cache --include-image-data -q "${dest}"
+	done
+}
+
+install_grub() {
+}
+
+customize_theme() {
+	sed -f - "${GTKSRC}/sass/_theme-options.scss" \
+		> "${GTKSRC}/sass/_theme-options-temp.scss" <<- EOF
+			/\$panel_opacity/s/0\.15/0.5/
+			/\$activities/s/default/icon/
+			/\$panel_font/s/white/black/  # may delete
+			/\$max_window_style/s/square/round/
+			/\$monterey/s/false/true/
+		EOF
+}
+
+install_theme_deps() {
+	dnf install -y glib2-devel ImageMagick sassc > '/dev/null' 2>&1
+}
+
+install_beggy() { cp -Lfp -- "$1" "${STAGE}/beggy.jpg"; }
+
+gtk_base() {
+	sed -f - "${GTKSRC}/sass/_gtk-base.scss" \
+		> "${GTKSRC}/sass/_gtk-base-temp.scss" <<- EOF
+			/\$laptop/s/true/false/
+			/\$gnome_version/s/old/new/
+		EOF
+}
+
+install_theemy() {
+	if   [ "$1" = '-Dark' ]
+	then ico="$1"
+	else ico=
+	fi
+	printf '%s\n' \
+		'[Desktop Entry]' \
+		'Type=X-GNOME-Metatheme' \
+		"Name=WhiteSur$1" \
+		"Comment=${THEMECMT}" \
+		'Encoding=UTF-8' \
+		'' \
+		'[X-GNOME-Metatheme]' \
+		"GtkTheme=WhiteSur$1" \
+		"MetacityTheme=WhiteSur$1" \
+		"IconTheme=WhiteSur${ico}" \
+		'CursorTheme=WhiteSur-cursors' \
+		'ButtonLayout=close,minimize,maximize:menu' > "$2/index.theme"
+	# GTK 2
+	cp -Lfp -- "${GTKSRC}/main/gtk-2.0/gtkrc$1" "$2/gtk-2.0/gtkrc"
+	cp -Lfp -- "${GTKSRC}/main/gtk-2.0/menubar-toolbar$1.rc" \
+		"$2/gtk-2.0/menubar-toolbar.rc"
+	cp -Lfp -- "${GTKSRC}/main/gtk-2.0/common/"*'.rc' "$2/gtk-2.0"
+	cp -RLfp -- "${GTKSRC}/assets/gtk-2.0/assets-common$1" \
+		"$2/gtk-2.0/assets"
+	cp -Lfp -- "${GTKSRC}/assets/gtk-2.0/assets$1/"*'.png' \
+		"$2/gtk-2.0/assets"
+	# GTK 3
+	cp -RLfp -- "${GTKSRC}/assets/gtk/common-assets/assets" \
+		"${STAGE}/gtk-3.0"
+	cp -RLfp -- \
+		"${GTKSRC}/assets/gtk/common-assets/sidebar-assets/"*'.png' \
+		"${GTKSRC}/assets/gtk/scalable" \
+		"${STAGE}/gtk-3.0/assets"
+	cp -RLfp -- "${GTKSRC}/assets/gtk/windows-assets/titlebutton" \
+		"${STAGE}/gtk-3.0/windows-assets"
+	sassc -t expanded "${GTKSRC}/main/gtk-3.0/gtk$1.scss" \
+		"${STAGE}/gtk-3.0/gtk.css"
+	sassc -t expanded "${GTKSRC}/main/gtk-3.0/gtk-Dark.scss" \
+		"${STAGE}/gtk-3.0/gtk-dark.css"
+	cp -Lfp -- "${GTKSRC}/assets/gtk/thumbnails/thumbnail$1.png" \
+		"$2/gtk-3.0/thumbnail.png"
+	printf '%s\n' '@import url("resource:///org/gnome/theme/gtk.css");' \
+		> "$2/gtk-3.0/gtk.css"
+	printf '%s\n' \
+		'@import url("resource:///org/gnome/theme/gtk-dark.css");' \
+		> "$2/gtk-3.0/gtk-dark.css"
+	glib-compile-resources --sourcedir="${STAGE}/gtk-3.0" \
+		--target="$2/gtk-3.0/gtk.gresource" \
+		"${GTKSRC}/main/gtk-3.0/gtk.gresource.xml"
+	# GTK 4
+	cp -RLfp -- "${STAGE}/gtk-3.0/assets" \
+		"${STAGE}/gtk-3.0/windows-assets" \
+		"${STAGE}/gtk-4.0"
+	sassc -t expanded "${GTKSRC}/main/gtk-4.0/gtk$1.scss" \
+		"${STAGE}/gtk-4.0/gtk.css"
+	sassc -t expanded "${GTKSRC}/main/gtk-4.0/gtk-Dark.scss" \
+		"${STAGE}/gtk-4.0/gtk-dark.css"
+	cp -Lfp -- "${GTKSRC}/assets/gtk/thumbnails/thumbnail$1.png" \
+		"$2/gtk-4.0/thumbnail.png"
+	printf '%s\n' '@import url("resource:///org/gnome/theme/gtk.css");' \
+		> "$2/gtk-4.0/gtk.css"
+	printf '%s\n' \
+		'@import url("resource:///org/gnome/theme/gtk-dark.css");' \
+		> "$2/gtk-4.0/gtk-dark.css"
+	glib-compile-resources --sourcedir="${STAGE}/gtk-4.0" \
+		--target="$2/gtk-4.0/gtk.gresource" \
+		"${GTKSRC}/main/gtk-4.0/gtk.gresource.xml"
+	# Plank
+	cp -Lfp -- "${GTKSRC}/other/plank/theme$1/"*'.theme' "$2/plank"
+}
+
+shell_base() {
+	sed "/widgets/s/46-0/${GSMAJVER}-0/" \
+		"${GTKSRC}/main/gnome-shell/_shell-base.scss" \
+		> "${GTKSRC}/main/gnome-shell/_shell-base-temp.scss"
+}
+
+install_shelly() {
+	cp -RLfp -- "${GTKSRC}/assets/gnome-shell/icons" \
+		"${GTKSRC}/main/gnome-shell/pad-osd.css" \
+		"$2"
+	sassc -t expanded \
+		"${GTKSRC}/main/gnome-shell/gnome-shell$1.scss" \
+		"$2/gnome-shell.css"
+	cp -Lfp -- "${GTKSRC}/assets/gnome-shell/common-assets/"*'.svg' \
+		"${GTKSRC}/assets/gnome-shell/assets$1/"*'.svg' \
+		"${GTKSRC}/assets/gnome-shell/theme/"*'.svg' \
+		"$2/assets"
+	cp -Lfp -- \
+		"${GTKSRC}/assets/gnome-shell/activities/activities-fedora.svg" \
+		"$2/assets/activities.svg"
+	cp -Lfp -- \
+		"${GTKSRC}/assets/gnome-shell/activities/activities-fedora.svg" \
+		"$2/assets/activities-white.svg"
+	cp -Lfp -- "${STAGE}/beggy.jpg" "$2/assets/background.jpg"
+	mv -f -- "$2/assets/no-events.svg" "$2/no-events.svg"
+	mv -f -- "$2/assets/process-working.svg" "$2/process-working.svg"
+	mv -f -- "$2/assets/no-notifications.svg" "$2/no-notifications.svg"
+	# may delete
+	cp -Lfp -- \
+		"${GTKSRC}/assets/gnome-shell/activities-black/activities-fedora.svg" \
+		"$2/assets/activities.svg"
+}
+
+install_libadwaita() {
+	sassc -t expanded "${GTKSRC}/main/gtk-4.0/gtk-Light.scss" \
+		"${ADW}/gtk-Light.css"
+	sassc -t expanded "${GTKSRC}/main/gtk-4.0/gtk-Dark.scss" \
+		"${ADW}/gtk-Dark.css"
+	ln -fsL -- "gtk$1.css" "${ADW}/gtk.css"
+	ln -fsL -- 'gtk-Dark.css' "${ADW}/gtk-dark.css"
+	cp -RLfp -- "${GTKSRC}/assets/gtk/common-assets/assets" "${ADW}"
+	cp -RLfp -- \
+		"${GTKSRC}/assets/gtk/common-assets/sidebar-assets/"*'.png' \
+		"${GTKSRC}/assets/gtk/scalable" \
+		"${ADW}/assets"
+	cp -RLfp -- "${GTKSRC}/assets/gtk/windows-assets/titlebutton" \
+		"${ADW}/windows-assets"
+}
+
+install_gdm_theme() {
+	magick "${STAGE}/beggy.jpg" \
+		-blur 0x50 \
+		-fill black \
+		-colorize 45% \
+		"${STAGE}/beggy.jpg"
+	install_shelly '-Light' "${STAGE}/shelly"
+	ed -s "${STAGE}/shelly/gnome-shell.css" > '/dev/null' <<- EOF
+		s|assets|resource:///org/gnome/shell/theme/assets
+		w
+		q
+	EOF
+	backup_gs_theme
+	glib-compile-resources --sourcedir="${STAGE}/shelly" --target="${GS}" \
+		"${GTKSRC}/main/gnome-shell/gnome-shell-theme.gresource.xml"
+}
+
+install_dash_to_dock_theme() {
+	# https://github.com/micheleg/dash-to-dock/blob/816d585207c2964225b33ab944766b0b62e65de4/Makefile#L102
+	sassc -t expanded "${GTKSRC}/other/dash-to-dock/stylesheet-4.scss" \
+		"${D2D}"
+	dbus-launch dconf write \
+		'/org/gnome/shell/extensions/dash-to-dock/apply-custom-theme' \
+		'true'
+}
+
+install_firefox_theme() {
+	[ "$(wc -l <<- EOF
+		${FFPF}
+	EOF
+	)" -ne 1 ] \
+		&& printf 'Firefox has more than one default-release profile. Skipping...\n' \
+		&& return 0
+	cp -RLfp "${GTKSRC}/other/firefox/customChrome.css" \
+		"${GTKSRC}/other/firefox/Monterey" \
+		"${FF}"
+	cp -RLfp "${GTKSRC}/other/firefox/common/icons" \
+		"${GTKSRC}/other/firefox/common/pages" \
+		"${GTKSRC}/other/firefox/common/titlebuttons" \
+		"${GTKSRC}/other/firefox/common/"*'.css' \
+		"${FF}/Monterey"
+	cp -Lfp "${GTKSRC}/other/firefox/common/parts/"*'.css' \
+		"${FF}/Monterey/parts"
+	cp -Lfp "${GTKSRC}/other/firefox/userChrome-Monterey-adaptive.css" \
+		"${FF}/userChrome.css"
+	cp -Lfp "${GTKSRC}/other/firefox/userContent-Monterey-adaptive.css" \
+		"${FF}/userContent.css"
+	ln -fsL '../firefox-themes' "${FFPF}/chrome"
+	grep -Fqs "${THEME}" "${FFPF}/user.js" 2> '/dev/null' && return 0
+	printf '%s\n' \
+		"// ${THEME}" \
+		'user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);' \
+		'user_pref("browser.tabs.drawInTitlebar", true);' \
+		'user_pref("browser.uidensity", 0);' \
+		'user_pref("layers.acceleration.force-enabled", true);' \
+		'user_pref("mozilla.widget.use-argb-visuals", true);' \
+		'user_pref("widget.gtk.rounded-bottom-corners.enabled", true);' \
+		'user_pref("svg.context-properties.content.enabled", true);' \
+		>> "${FFPF}/user.js"
+}
+
+trap -- "rm -fR ${STAGE}" EXIT HUP INT TERM
+rm -fR -- "${ADW}/gtk.css" \
+	"${ADW}/gtk-dark.css" \
+	"${ADW}/gtk-Light.css" \
+	"${ADW}/gtk-Dark.css" \
+	"${ADW}/assets" \
+	"${ADW}/windows-assets" \
+	"${FF}/Monterey" \
+	"${FF}/customChrome.css" \
+	"${FF}/userChrome.css" \
+	"${FF}/userContent.css" \
+	"${HOME}/.icons/macOS"* \
+	'/boot/grub2/themes/whitesur'
+mkdir -pm 0700 -- "${STAGE}/gtk" \
+	"${ICOSRC}" \
+	"${STAGE}/gtk-3.0" \
+	"${STAGE}/gtk-4.0" \
+	"${STAGE}/shelly/assets" \
+	"${ADW}" \
+	"${FF}/Monterey/parts" \
+	"${HOME}/.icons" \
+	'/boot/grub2/themes/whitesur'
+curl "${CURLRC}" "${GTKREL}" | tar -xzC "${STAGE}/gtk" --strip-components=1
+git clone -qb "${GSVER}" --depth 1 \
+	'https://gitlab.gnome.org/GNOME/gnome-shell.git' \
+	"${STAGE}/gs" 2> '/dev/null'
+curl "${CURLRC}" "${D2DREL}" | sassc -s --omit-map-comment "${D2D}.bak"
+curl "${CURLRC}" "${ICOREL}" | tar -xzC "${ICOSRC}" --strip-components=1
+curl "${CURLRC}" "${CURREL}" \
+	| tar -xJC "${HOME}/.icons" './macOS' './macOS-White'
+curl "${CURLRC}" "${GRUBREL}" | tar -xzC "${GRUBSRC}" --strip-components=1
+curl "${CURLRC}" -o "${STAGE}/-Dark.jpg" "${BGD}"
+curl "${CURLRC}" -o "${STAGE}/-Light.jpg" "${BGL}"
+
+customize_theme
+sudo install_theme_deps
+gtk_base
+shell_base
+
+for v in ${VARIANTS}
+do
+	dest="${HOME}/.themes/${THEME}${v}"
+	rm -fR -- "${dest}"
+	mkdir -pm 0700 -- "${dest}/gtk-2.0" \
+		"${dest}/gtk-3.0" \
+		"${dest}/gtk-4.0" \
+		"${dest}/plank" \
+		"${dest}/gnome-shell/assets"
+	install_beggy "${STAGE}/${v}.jpg"
+	install_theemy "${v}" "${dest}"
+	install_shelly "${v}" "${dest}/gnome-shell"
+done
+
+install_libadwaita '-Light'
+sudo install_gdm_theme
+install_dash_to_dock_theme
+install_firefox_theme
+install_icons '' '-light' '-dark'
+sudo install_grub '/boot/grub2/themes' 'whitesur'
+
+main() {
+	set -eu
+	IFS=' '
+
+	. ./config
+
+	STAGE="$(mktemp -dt "${THEME}.XXXXXX")"
+	GTKSRC="${STAGE}/gtk/src"
+	GSSRC="${STAGE}/gs/data"
+	ICOSRC="${STAGE}/ico"
+	GRUBSRC="${STAGE}/grub"
+	OSVER="$(sed -n '/VERSION_ID=/s///p' '/etc/os-release')"
+	GSVER="$(gnome-shell --version | cut -f 3 -d ' ')"
+	GSMAJVER="$(cut -f 1 -d '.' <<- EOF
+		${GSVER}
+	EOF
+	)"
+}
+
+main "$@"

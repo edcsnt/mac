@@ -1,0 +1,17 @@
+Install *and* apply
+
+* https://www.pling.com/p/1403328/,
+* https://www.pling.com/p/1405756/,
+* https://www.pling.com/p/1648129/,
+* https://512pixels.net/projects/default-mac-wallpapers-in-5k/, and
+* https://www.pling.com/p/1307852
+
+to Fedora Workstation, all in one POSIX shell script.
+
+Edit ./config as appropriate before executing.
+
+Usage
+-----
+
+    $EDITOR ./config
+    ./macos
