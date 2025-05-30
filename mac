@@ -2,20 +2,19 @@
 #
 # Copyright (C) 2025 Eduardo Santos <eduardo.experimental@gmail.com>
 #
-# This file is part of edcsnt/macos.
+# This file is part of edcsnt/mac.
 #
-# edcsnt/macos is free software: you can redistribute it and/or modify it under
+# edcsnt/mac is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
 # Foundation, either version 3 of the License, or (at your option) any later
 # version.
 #
-# edcsnt/macos is distributed in the hope that it will be useful, but WITHOUT
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
-# details.
+# edcsnt/mac is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+# A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License along with
-# edcsnt/macos. If not, see <https://www.gnu.org/licenses/>.
+# edcsnt/mac. If not, see <https://www.gnu.org/licenses/>.
 #
 
 bakgs() {
