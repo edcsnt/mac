@@ -502,17 +502,17 @@ mkdir -pm 0700 -- "${STAGE}/gtk" \
 	"${FF}/Monterey/parts" \
 	"${HOME}/.icons" \
 	'/boot/grub2/themes/whitesur'
-curl "${CURLRC}" "${GTKREL}" | tar -xzC "${STAGE}/gtk" --strip-components=1
+curl -Ls "${GTKREL}" | tar -xzC "${STAGE}/gtk" --strip-components=1
 git clone -qb "${GSVER}" --depth 1 \
 	'https://gitlab.gnome.org/GNOME/gnome-shell.git' \
 	"${STAGE}/gs" 2> '/dev/null'
-curl "${CURLRC}" "${D2DREL}" | sassc -s --omit-map-comment "${D2D}.bak"
-curl "${CURLRC}" "${ICOREL}" | tar -xzC "${ICOSRC}" --strip-components=1
-curl "${CURLRC}" "${CURREL}" \
+curl -s "${D2DREL}" | sassc -s --omit-map-comment "${D2D}.bak"
+curl -Ls "${ICOREL}" | tar -xzC "${ICOSRC}" --strip-components=1
+curl -Ls "${CURREL}" \
 	| tar -xJC "${HOME}/.icons" './macOS' './macOS-White'
-curl "${CURLRC}" "${GRUBREL}" | tar -xzC "${GRUBSRC}" --strip-components=1
-curl "${CURLRC}" -o "${STAGE}/-Dark.jpg" "${BGD}"
-curl "${CURLRC}" -o "${STAGE}/-Light.jpg" "${BGL}"
+curl -Ls "${GRUBREL}" | tar -xzC "${GRUBSRC}" --strip-components=1
+curl -o "${STAGE}/-Dark.jpg" -s "${BGD}"
+curl -o "${STAGE}/-Light.jpg" -s "${BGL}"
 
 customize_theme
 sudo install_theme_deps

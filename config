@@ -17,6 +17,8 @@
 
 # options
 THEME=WhiteSur
+# https://github.com/vinceliuice/WhiteSur-gtk-theme/blob/9f9646c02a19335eb2d48d6b9a19136d9ec8fbf7/libs/lib-install.sh#L412
+THEMECMT='A MacOS BigSur like Gtk+ theme based on Elegant Design'
 VARIANTS='-Dark -Light'        # either '-Dark', '-Light', or '-Dark -Light'
 FFPF=4d69ooeh.default-release  # your Firefox profile
 
@@ -41,11 +43,3 @@ ADW=$HOME/.config/gtk-4.0
 GS=/usr/share/gnome-shell/gnome-shell-theme.gresource
 D2D=$HOME/.local/share/gnome-shell/extensions/dash-to-dock@micxgx.gmail.com/stylesheet.css
 FF=$HOME/.mozilla/firefox/firefox-themes
-
-# misc
-CURLRC='-q --compressed --curves X25519 --doh-cert-status --fail-early \
---fail-with-body -g --hsts "" --http2 -L --no-clobber -Z --proto =https \
---remove-on-error -s --tls13-ciphers TLS_AES_256_GCM_SHA384 --tlsv1.3 \
--A "Mozilla/5.0 (X11; Linux x86_64; rv:138.0) Gecko/20100101 Firefox/138.0"'
-# https://github.com/vinceliuice/WhiteSur-gtk-theme/blob/9f9646c02a19335eb2d48d6b9a19136d9ec8fbf7/libs/lib-install.sh#L412
-THEMECMT='A MacOS BigSur like Gtk+ theme based on Elegant Design'
