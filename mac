@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright 2025 Eduardo Santos. All Rights Reserved.
+# Copyright 2025 Eduardo Santos. All rights reserved.
 bakgs() {
 	# https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/e935a0ad7c256bf6929699512bd31d2c985640a7/data/theme/meson.build#L57
 	sassc -a $GSSRC/theme/gnome-shell-high-contrast.scss \
