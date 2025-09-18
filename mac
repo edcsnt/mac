@@ -1,14 +1,14 @@
 #!/bin/sh
 # Copyright 2025 Eduardo Santos. All rights reserved.
 bakgs() {
-	# https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/e935a0ad7c256bf6929699512bd31d2c985640a7/data/theme/meson.build#L57
+	# <https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/e935a0ad7c256bf6929699512bd31d2c985640a7/data/theme/meson.build#L57>
 	sassc -a $GSSRC/theme/gnome-shell-high-contrast.scss \
 		$GSSRC/theme/gnome-shell-high-contrast.css
 	sassc -a $GSSRC/theme/gnome-shell-dark.scss \
 		$GSSRC/theme/gnome-shell-dark.css
 	sassc -a $GSSRC/theme/gnome-shell-light.scss \
 		$GSSRC/theme/gnome-shell-light.css
-	# https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/e935a0ad7c256bf6929699512bd31d2c985640a7/data/meson.build#L67-86
+	# <https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/e935a0ad7c256bf6929699512bd31d2c985640a7/data/meson.build#L67-86>
 	glib-compile-resources $GSSRC/gnome-shell-theme.gresource.xml \
 		--sourcedir $GSSRC/theme \
 		--generate \
@@ -420,7 +420,7 @@ install_gdm_theme() {
 }
 
 install_dash_to_dock_theme() {
-	# https://github.com/micheleg/dash-to-dock/blob/816d585207c2964225b33ab944766b0b62e65de4/Makefile#L102
+	# <https://github.com/micheleg/dash-to-dock/blob/816d585207c2964225b33ab944766b0b62e65de4/Makefile#L102>
 	sassc -t expanded "${GTKSRC}/other/dash-to-dock/stylesheet-4.scss" \
 		"${D2D}"
 	dbus-launch dconf write \
