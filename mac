@@ -257,11 +257,12 @@ install_grub() {
 }
 
 customize_theme() {
+	# TODO(edcsnt): check if the black panel font looks right
 	sed -f - "${GTKSRC}/sass/_theme-options.scss" \
 		> "${GTKSRC}/sass/_theme-options-temp.scss" <<- EOF
 			/\$panel_opacity/s/0\.15/0.5/
 			/\$activities/s/default/icon/
-			/\$panel_font/s/white/black/  # may delete
+			/\$panel_font/s/white/black/
 			/\$max_window_style/s/square/round/
 			/\$monterey/s/false/true/
 		EOF
@@ -380,7 +381,7 @@ install_shelly() {
 	mv -f -- "$2/assets/no-events.svg" "$2/no-events.svg"
 	mv -f -- "$2/assets/process-working.svg" "$2/process-working.svg"
 	mv -f -- "$2/assets/no-notifications.svg" "$2/no-notifications.svg"
-	# may delete
+	# TODO(edcsnt): check if the black activities icon looks right
 	cp -Lfp -- \
 		"${GTKSRC}/assets/gnome-shell/activities-black/activities-fedora.svg" \
 		"$2/assets/activities.svg"
