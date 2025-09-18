@@ -3,7 +3,8 @@
 THEME=WhiteSur
 # <https://github.com/vinceliuice/WhiteSur-gtk-theme/blob/9f9646c02a19335eb2d48d6b9a19136d9ec8fbf7/libs/lib-install.sh#L412>
 THEMECMT='A MacOS BigSur like Gtk+ theme based on Elegant Design'
-VARIANTS='-Dark -Light'        # either '-Dark', '-Light', or '-Dark -Light'
+VARIANTS='-Dark -Light'        # either '-Dark', '-Light', or
+                               # '-Dark -Light'
 FFPF=4d69ooeh.default-release  # your Firefox profile
 
 # versions

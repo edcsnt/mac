@@ -88,9 +88,10 @@ ico() {
 					w
 					q
 				EOF' sh {} \;
-			# I don't know if Vince copied $ICOSRC/links/status/*
-			# after sed intentionally, so even though we could
-			# avoid a fork(2) by moving this up, let's be safe
+			# I don't know if Vince copied
+			# $ICOSRC/links/status/* after sed
+			# intentionally, so even though we could avoid a
+			# fork(2) by moving this up, let's be safe
 			# instead.
 			cp -R $ICOSRC/links/status/16 \
 				$ICOSRC/links/status/22 \
